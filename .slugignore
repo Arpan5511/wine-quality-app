@@ -1,0 +1,11 @@
+*.ipynb
+notebooks/
+__pycache__/
+.pytest_cache/
+*.pyc
+.git
+.gitignore
+README.md
+*.md
+.env
+.venv
