@@ -285,12 +285,13 @@ def get_sample_data():
 
 @app.route('/health', methods=['GET'])
 def health():
-    """Health check endpoint."""
+    """Health check endpoint - always works."""
     return jsonify({
         'status': 'healthy',
+        'service': 'wine-quality-app',
         'model_loaded': model_loaded,
         'timestamp': datetime.now().isoformat()
-    })
+    }), 200
 
 
 @app.errorhandler(404)
@@ -310,15 +311,20 @@ if __name__ == '__main__':
     print("WINE QUALITY PREDICTION - WEB APPLICATION")
     print("="*70 + "\n")
     
-    # Load model
+    # Try to load model, but don't fail if it's missing
     print("Loading model...")
-    load_model()
+    try:
+        load_model()
+    except Exception as e:
+        print(f"[WARNING] Failed to load model: {e}")
+        print("[WARNING] Some endpoints will return errors until model is trained locally")
     
     if not model_loaded:
-        print("\n[WARNING] Model not loaded. Please run 'python train.py' first to train the model.\n")
+        print("\n[WARNING] Model not loaded. API will respond with error messages.")
+        print("[INFO] To train the model locally, run: python train.py\n")
     else:
-        print("\nStarting Flask application...")
-        print("Visit http://localhost:5000 to access the application\n")
+        print("\n[OK] Model loaded successfully")
+        print("[OK] Starting Flask application...\n")
     
     # Get port from environment variable (Render sets this), default to 5000 for local development
     port = int(os.environ.get('PORT', 5000))
